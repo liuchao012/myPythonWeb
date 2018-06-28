@@ -7,10 +7,13 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from django.test import LiveServerTestCase
 import unittest
 
 
-class NewVisitorTest(unittest.TestCase):
+#class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
+
     def setUp(self):
         self.driver = webdriver.Firefox()
         self.driver.implicitly_wait(3)
@@ -23,7 +26,9 @@ class NewVisitorTest(unittest.TestCase):
         self.assertIn(row_text, [row.text for row in rows])
 
     def test_can_start_a_list_and_retrieve_it_later(self):
-        self.driver.get("http://localhost:8000")
+        #类继承LiveServerTestCase 后将不使用实际部署的localhost 地址,使用 django提供的self.live_server_url地址
+        #self.driver.get("http://localhost:8000")
+        self.driver.get(self.live_server_url)
 
         #发现页面上显示的 TO-DO 字样
         self.assertIn('To-Do', self.driver.title)
