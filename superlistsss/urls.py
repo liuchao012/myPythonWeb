@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from listsss.views import home_page
+from listsss.views import home_page, view_list, new_list
 
 urlpatterns = [
     path(r'', home_page, name="home"),
-    # path(r'admin/', admin.site.urls),
+    path(r'list/the-only-list-in-the-world/', view_list, name = 'view_list'),
+    path(r'list/new', new_list, name="new_list"),
+    path(r'admin/', admin.site.urls),
 
 ]
