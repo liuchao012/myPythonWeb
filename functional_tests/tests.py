@@ -92,6 +92,20 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('Buy milk', page_text)
         self.fail('Finisth the test')
 
+    def test_layout_and_styling(self):
+        self.driver.get(self.live_server_url)
+        self.driver.set_window_size(1024, 768)
+
+        # 查看页面元素居中
+        inputbox = self.driver.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 512, delta=10)
+
+        # 保存成功后，清单列表的输入框也居中
+        inputbox.send_keys('testing')
+        inputbox.send_keys(Keys.ENTER)
+        inputbox = self.driver.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 512, delta=10)
+
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
