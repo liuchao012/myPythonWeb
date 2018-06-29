@@ -32,15 +32,28 @@ def home_page(request):
     return render(request, 'listsss/home.html')
 
 
-def view_list(request):
-    items_list = Item.objects.all()
-    return render(request, 'listsss/list.html', {'items_list': items_list})
+def view_list(request, list_id):
+    list_ = List.objects.get(id=list_id)
+
+    # items_list = Item.objects.filter(list=list_)
+    # # items_list = Item.objects.all()
+    # return render(request, 'listsss/list.html', {'items_list': items_list})
+    return render(request, 'listsss/list.html', {'list':list_})
 
 
 def new_list(request):
     list_ = List.objects.create()
     Item.objects.create(text=request.POST['item_text'], list=list_)
-    return redirect('/list/the-only-list-in-the-world/')
+
+    # 重新定义到有效地址
+    # return redirect('/list/the-only-list-in-the-world/')
+    return redirect('/list/%d/' % (list_.id,))
+
+
+def add_item(request, list_id):
+    list_ = List.objects.get(id=list_id)
+    Item.objects.create(text=request.POST['item_text'], list=list_)
+    return redirect('/list/%d/' % (list_.id,))
 
 
 class home_page_class():
