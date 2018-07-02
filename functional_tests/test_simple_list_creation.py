@@ -10,22 +10,11 @@ from selenium.webdriver.common.keys import Keys
 from django.test import LiveServerTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import unittest
+from unittest import skip
+from .base import FunctionalTest
 
 
-# class NewVisitorTest(unittest.TestCase):
-#class NewVisitorTest(LiveServerTestCase):
-class NewVisitorTest(StaticLiveServerTestCase):
-    def setUp(self):
-        self.driver = webdriver.Firefox()
-        self.driver.implicitly_wait(3)
-
-    def tearDown(self):
-        self.driver.quit()
-
-    def check_for_row_in_list_table(self, row_text):
-        table = self.driver.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(row_text, [row.text for row in rows])
+class NewVisitorTest(FunctionalTest):
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         # 类继承LiveServerTestCase 后将不使用实际部署的localhost 地址,使用 django提供的self.live_server_url地址
@@ -91,22 +80,4 @@ class NewVisitorTest(StaticLiveServerTestCase):
         page_text = self.driver.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers', page_text)
         self.assertIn('Buy milk', page_text)
-        self.fail('Finisth the test')
-
-    def test_layout_and_styling(self):
-        self.driver.get(self.live_server_url)
-        self.driver.set_window_size(1024, 768)
-
-        # 查看页面元素居中
-        inputbox = self.driver.find_element_by_id('id_new_item')
-        self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 512, delta=10)
-
-        # 保存成功后，清单列表的输入框也居中
-        inputbox.send_keys('testing')
-        inputbox.send_keys(Keys.ENTER)
-        inputbox = self.driver.find_element_by_id('id_new_item')
-        self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 512, delta=10)
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
+        # self.fail('Finisth the test')
