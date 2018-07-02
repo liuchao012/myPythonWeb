@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect  # redirect是python的重定向方法
 from django.http import HttpResponse
 from listsss.models import Item, List
-
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 def home_page(request):
@@ -43,8 +43,13 @@ def view_list(request, list_id):
 
 def new_list(request):
     list_ = List.objects.create()
-    Item.objects.create(text=request.POST['item_text'], list=list_)
-
+    item = Item.objects.create(text=request.POST['item_text'], list=list_)
+    try:
+        item.full_clean()
+    except ValidationError:
+        list_.delete()
+        error = 'You cant have an empty list item'
+        return render(request, 'listsss/home.html', {"error":error})
     # 重新定义到有效地址
     # return redirect('/list/the-only-list-in-the-world/')
     return redirect('/list/%d/' % (list_.id,))

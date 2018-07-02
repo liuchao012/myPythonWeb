@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import resolve
 from django.http import HttpRequest
 from django.template.loader import render_to_string
+from django.utils.html import escape
 from listsss.models import Item, List
 from listsss.views import home_page
 import unittest
@@ -25,7 +26,7 @@ class HomePageTest(TestCase):
         # .decode()将字符串转换成unicode
         # self.assertEqual(resp.content.decode(), expected_html)
 
-        #self.assertTrue(resp.content.startswith(b'<html>'))
+        # self.assertTrue(resp.content.startswith(b'<html>'))
         self.assertIn(b"<title>To-Do lists</title>", resp.content)
         self.assertTrue(resp.content.endswith(b'</html>'))
 
@@ -82,6 +83,8 @@ class ListViewTest(TestCase):
         self.assertEqual(resp.context['list'], correct_list)
 
 
+
+
 class NewListTest(TestCase):
     def test_saving_a_POST_request(self):
         self.client.post('/list/new', data={'item_text': 'A new list item'})
@@ -122,6 +125,18 @@ class NewListTest(TestCase):
         # self.assertEqual(rep.status_code, 302)
         # self.assertEqual(rep['location'], '/list/the-only-list-in-the-world/')
 
+    def test_validation_error_are_sent_back_to_home_page_template(self):
+        resp = self.client.post('/list/new', data={'item_text': ''})
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'listsss/home.html')
+        ex_error = escape("You cant have an empty list item")
+        print(resp.content.decode())
+        self.assertContains(resp, ex_error)
+
+    def test_invalid_list_items_arent_saved(self):
+        self.client.post('/list/new', data={"item_text": ''})
+        self.assertEqual(List.objects.count(), 0)
+        self.assertEqual(Item.objects.count(), 0)
 
 class NewItemTest(TestCase):
     def test_can_save_a_POST_to_an_existing_list(self):
