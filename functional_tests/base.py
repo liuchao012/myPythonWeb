@@ -14,6 +14,8 @@ from unittest import skip
 
 
 class FunctionalTest(StaticLiveServerTestCase):
+
+    #不知道为什么加上下面两个方法之后就报错了
     # @classmethod
     # def setUpClass(cls):
     #     pass
