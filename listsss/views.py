@@ -41,7 +41,9 @@ def view_list(request, list_id):
             item = Item.objects.create(text=request.POST['item_text'], list=list_)
             item.full_clean()
             item.save()
-            return redirect('/list/%d/' % (list_.id,))
+            #简化
+            #return redirect('/list/%d/' % (list_.id,))
+            return redirect(list_)
         except ValidationError:
             item.delete()  # 不知道为什么要加这一步，书里面没有这步骤，书上说抓取到这个错误就不会存到数据库里面了，可还是存进去了
             error = 'You cant have an empty list item'
@@ -61,7 +63,9 @@ def new_list(request):
         return render(request, 'listsss/home.html', {"error": error})
     # 重新定义到有效地址
     # return redirect('/list/the-only-list-in-the-world/')
-    return redirect('/list/%d/' % (list_.id,))
+    # 去除硬编码
+    # return redirect('/list/%d/' % (list_.id,))
+    return redirect('view_list', list_.id)
 
 
 def add_item(request, list_id):
