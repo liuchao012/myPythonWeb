@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from listsss.models import Item, List
 from django.core.exceptions import ValidationError
 
+
 # Create your views here.
 def home_page(request):
     # return HttpResponse("<html><title>To-Do lists</title></html>")
@@ -33,12 +34,18 @@ def home_page(request):
 
 
 def view_list(request, list_id):
+    error = None
     list_ = List.objects.get(id=list_id)
-
-    # items_list = Item.objects.filter(list=list_)
-    # # items_list = Item.objects.all()
-    # return render(request, 'listsss/list.html', {'items_list': items_list})
-    return render(request, 'listsss/list.html', {'list':list_})
+    if request.method == 'POST':
+        try:
+            item = Item.objects.create(text=request.POST['item_text'], list=list_)
+            item.full_clean()
+            item.save()
+            return redirect('/list/%d/' % (list_.id,))
+        except ValidationError:
+            item.delete()  # 不知道为什么要加这一步，书里面没有这步骤，书上说抓取到这个错误就不会存到数据库里面了，可还是存进去了
+            error = 'You cant have an empty list item'
+    return render(request, 'listsss/list.html', {'list': list_, 'error': error})
 
 
 def new_list(request):
@@ -46,10 +53,12 @@ def new_list(request):
     item = Item.objects.create(text=request.POST['item_text'], list=list_)
     try:
         item.full_clean()
+        item.save()
     except ValidationError:
         list_.delete()
+        item.delete()  # 不知道为什么要加这一步，书里面没有这步骤，书上说抓取到这个错误就不会存到数据库里面了，可还是存进去了
         error = 'You cant have an empty list item'
-        return render(request, 'listsss/home.html', {"error":error})
+        return render(request, 'listsss/home.html', {"error": error})
     # 重新定义到有效地址
     # return redirect('/list/the-only-list-in-the-world/')
     return redirect('/list/%d/' % (list_.id,))
