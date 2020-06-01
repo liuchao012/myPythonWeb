@@ -76,3 +76,5 @@ def add_item(request, list_id):
 
 class home_page_class():
     pass
+
+
